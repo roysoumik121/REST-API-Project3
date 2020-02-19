@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const categorySchema = new Schema({
     name: String,
     status: String,
-    date: Date,
+    //date: Date,
     news: [{
         type: Schema.Types.ObjectId,
         ref: 'news'
