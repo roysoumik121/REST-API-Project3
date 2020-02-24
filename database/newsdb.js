@@ -5,7 +5,7 @@ const newsSchema = new Schema({
     headline: String,
     authors: String,
     description: String,
-    //date: Date,
+    date: Date,
     category: {
         type: Schema.Types.ObjectId,
         ref: 'categories'

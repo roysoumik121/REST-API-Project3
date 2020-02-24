@@ -83,5 +83,24 @@ router.put('/:categoryId', async (req, res, next)=>{
 })
 
 
+//  Deletes particular category
+router.delete('/:categoryId', async (req, res, next)=>{
+    try {
+        const category = await categories.findById(req.params.categoryId);
+        if(!category){
+            return res.status(404).send({error: "category does not exists"});
+        }
+        if(category.news.length == 0){
+            await category.remove();
+            return res.status(200).send(category);
+        }
+        res.status(404).send({error: "Please remove the news first"})
+    } 
+    catch (error) {
+        next(error);
+    }
+})
+
+
 
 module.exports = router;
