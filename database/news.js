@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 
 const newsSchema = new Schema({
     headline: String,
-    authors: String,
+    author: String,
     description: String,
     date: Date,
-    category: {
+    category_id: {
         type: Schema.Types.ObjectId,
         ref: 'categories'
     }

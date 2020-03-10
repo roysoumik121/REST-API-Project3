@@ -1,106 +1,28 @@
 const express = require('express');
-const categories = require('../database/categorydb.js');
-const news = require('../database/newsdb.js');
 const router = express.Router();
+const categoryController = require('../controllers/categories.js')
 
 
 
-//  List all categories   
-router.get('/', async (req, res, next)=>{
-    try {
-        const category = await categories.find({});
-        res.status(200).send(category);
-    } 
-    catch (error) {
-        next(error);
-    }
-})
-
-
-//  List particular category
-router.get('/:categoryId', async (req, res, next)=>{
-    try {
-        const category = await categories.findById(req.params.categoryId);
-        res.status(200).send(category);
-    } 
-    catch (error) {
-        next(error);
-    }
-})
-
-
-//  List all news by particular category
-router.get('/:categoryId/news', async (req, res, next)=>{
-    try {
-        const category = await categories.findById(req.params.categoryId).populate('news');
-        res.status(200).send(category.news);
-    } 
-    catch (error) {
-        next(error);
-    }
-})
-
-
-//  Creates a new category
-router.post('/', async (req, res, next)=>{
-    try {
-        const newCategory = new categories(req.body);
-        const category = await newCategory.save();
-        res.status(201).send(category);
-    } 
-    catch (error) {
-        next(error);
-    }
-})
-
-
-//  Creates a new news for specific category
-router.post('/:categoryId/news', async (req, res, next)=>{
-    try {
-        const newNews = new news(req.body);
-        const category = await categories.findById(req.params.categoryId);
-        newNews.category = category;
-        await newNews.save();
-        category.news.push(newNews);
-        await category.save();
-        res.status(201).send(newNews);
-    } 
-    catch (error) {
-        next(error);
-    }
-})
-
-
-//  Updates particular category
-router.put('/:categoryId', async (req, res, next)=>{
-    try {
-        const updatedCategory = await categories.findByIdAndUpdate(req.params.categoryId, req.body)
-        res.status(200).send(updatedCategory);
-    } 
-    catch (error) {
-        next(error);
-    }
-})
-
-
-//  Deletes particular category
-router.delete('/:categoryId', async (req, res, next)=>{
-    try {
-        const category = await categories.findById(req.params.categoryId);
-        if(!category){
-            return res.status(404).send({error: "category does not exists"});
-        }
-        if(category.news.length == 0){
-            await category.remove();
-            return res.status(200).send(category);
-        }
-        res.status(404).send({error: "Please remove the news first"})
-    } 
-    catch (error) {
-        next(error);
-    }
-})
+//  Routes for '/categories'
+router.route('/')
+    //  List all categories
+    .get(categoryController.getCategories)
+    //  Creates a new category
+    .post(categoryController.createNewCategory)
 
 
 
+//  Routes for '/categories/:categoryId'
+router.route('/:categoryId')
+    //  List particular category
+    .get(categoryController.getCategory)
+    //  Updates particular category
+    .put(categoryController.updateCategory)
+    //  Delete particular category
+    .delete(categoryController.deleteCategory)
+
+
+
+//  Exporting router methods
 module.exports = router;
